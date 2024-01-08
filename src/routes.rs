@@ -9,10 +9,12 @@ use tokio::runtime::Runtime;
 
 use crate::{database, server, session, models};
 
+/// Opens the index.html file
 pub async fn index() -> impl Responder {
     NamedFile::open_async("./static/index.html").await.unwrap()
 }
 
+/// Starts a websocket connection
 pub async fn chat_server(req: HttpRequest, stream: web::Payload, db: web::Data<database::Database>, srv: web::Data<Addr<server::ChatServer>>) -> Result<HttpResponse, Error> {
     ws::start(
         session::WsChatSession {
