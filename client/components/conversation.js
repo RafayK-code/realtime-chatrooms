@@ -41,10 +41,10 @@ export default function Conversation({ data, auth, users }) {
             {
                 data.map(item => {
                     return <ConversationItem
-                        right={item.user_id === auth.id}
+                        right={item.user_id === auth._id}
                         content={item.content}
                         username={users.get(item.user_id)}
-                        key={item.id} />
+                        key={item._id} />
                 })
             }
         </div>

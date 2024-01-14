@@ -16,8 +16,8 @@ async fn main() -> std::io::Result<()> {
     let server = server::ChatServer::new().start();
     let server_addr = "127.0.0.1";
     let server_port = 8080;
-    let db = database::Database::new("MONGODB_URI");
-    let _app = HttpServer::new(move || {
+    let db = database::Database::new("MONGODB_URI").await;
+    let app = HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin("http://localhost:3000")
             .allowed_origin("http://localhost:8080")
@@ -41,6 +41,8 @@ async fn main() -> std::io::Result<()> {
     .workers(2)
     .bind((server_addr, server_port))?
     .run();
+
+    let _ = app.await;
 
     Ok(())
 }

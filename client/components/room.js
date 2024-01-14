@@ -20,7 +20,7 @@ function ChatListItem({ onSelect, room, userId, index, selectedItem }) {
     const date = new Date(created_at);
     const ampm = date.getHours >= 12 ? 'PM' : 'AM';
     const time = `${date.getHours()}:${date.getMinutes()} ${ampm}`
-    const name = users?.filter(user => user.id != userId).map(user => user.username)[0];
+    const name = users?.filter(user => user._id != userId).map(user => user.username)[0];
 
     return (
         <div
@@ -62,7 +62,7 @@ export default function ChatList({ onChatChange, userId }) {
         let mapUsers = new Map();
 
         item.users.forEach(el => {
-            mapUsers.set(el.id, el);
+            mapUsers.set(el._id, el);
         });
 
         const users = {
@@ -71,7 +71,7 @@ export default function ChatList({ onChatChange, userId }) {
             },
 
             get_target_user: (id) => {
-                return item.users.filter(el => el.id != id).map(el => el.username).join("");
+                return item.users.filter(el => el._id != id).map(el => el.username).join("");
             }
         }
 
@@ -87,7 +87,7 @@ export default function ChatList({ onChatChange, userId }) {
                         onSelect={(idx) => onSelectedChat(idx, item)}
                         room={{ ...item.room, users: item.users }}
                         index={index}
-                        key={item.room.id}
+                        key={item.room._id}
                         userId={userId}
                         selectedItem={selectedItem} />
                 })

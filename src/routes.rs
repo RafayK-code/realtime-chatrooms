@@ -5,7 +5,7 @@ use actix_files::NamedFile;
 use actix_web::{Responder, HttpRequest, web, HttpResponse, Error, post, get};
 use actix_web_actors::ws;
 use serde_json::json;
-use tokio::runtime::Runtime;
+use actix_rt::System;
 
 use crate::{database, server, session, models};
 
@@ -33,7 +33,7 @@ pub async fn chat_server(req: HttpRequest, stream: web::Payload, db: web::Data<d
 #[post("/users/create")]
 pub async fn create_user(db: web::Data<database::Database>, form: web::Json<models::NewUser>) -> Result<HttpResponse, Error> {
     let user = web::block(move || {
-        Runtime::new().expect("Fatal error").block_on(db.add_user(form.username.clone(), form.nickname.clone()))
+        System::new().block_on(db.add_user(form.username.clone(), form.nickname.clone()))
     })
     .await?
     .map_err(actix_web::error::ErrorUnprocessableEntity)?;
@@ -44,14 +44,16 @@ pub async fn create_user(db: web::Data<database::Database>, form: web::Json<mode
 #[get("/users/{username}")]
 pub async fn get_user(db: web::Data<database::Database>, username: web::Path<String>) -> Result<HttpResponse, Error> {
     let id = username.to_owned();
+
     let user = web::block(move || {
-        Runtime::new().expect("Fatal error").block_on(db.find_user(&id))
+        System::new().block_on(db.find_user(&id))
     })
     .await?
     .map_err(actix_web::error::ErrorInternalServerError)?;
 
     if let Some(user) = user {
-       return Ok(HttpResponse::Ok().json(user));
+        println!("Hello!");
+        return Ok(HttpResponse::Ok().json(user));
     }
 
     let res = HttpResponse::NotFound().body(
@@ -69,7 +71,7 @@ pub async fn get_user(db: web::Data<database::Database>, username: web::Path<Str
 pub async fn get_conversation_by_id(db: web::Data<database::Database>, room_id: web::Path<String>) -> Result<HttpResponse, Error> {
     let id = room_id.to_owned();
     let conversations = web::block(move || {
-        Runtime::new().expect("Fatal error").block_on(db.get_conversations_by_room_id(&id))
+        System::new().block_on(db.get_conversations_by_room_id(&id))
     })
     .await?
     .map_err(actix_web::error::ErrorInternalServerError)?;
@@ -92,7 +94,7 @@ pub async fn get_conversation_by_id(db: web::Data<database::Database>, room_id: 
 #[get("/rooms")]
 pub async fn get_rooms(db: web::Data<database::Database>) -> Result<HttpResponse, Error> {
     let rooms = web::block(move || {
-        Runtime::new().expect("Fatal error").block_on(db.get_all_rooms())
+        System::new().block_on(db.get_all_rooms())
     })
     .await?
     .map_err(actix_web::error::ErrorInternalServerError)?;

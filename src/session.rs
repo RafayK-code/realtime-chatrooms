@@ -5,7 +5,7 @@ use actix_web::web;
 use actix_web_actors::ws;
 
 use serde::{Deserialize, Serialize};
-use tokio::runtime::Runtime;
+use actix_rt::System;
 
 use crate::{database, server, models};
 
@@ -152,7 +152,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
                             message: input.value.join(""),
                         };
 
-                        let _ = Runtime::new().expect("Fatal error").block_on(self.db.add_conversation(new_conversation));
+                        let _ = System::new().block_on(self.db.add_conversation(new_conversation));
                         let msg = serde_json::to_string(&chat_msg).unwrap();
 
                         self.addr.do_send(server::ClientMessage {

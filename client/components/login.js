@@ -67,7 +67,7 @@ export default function Login({ show, setAuth }) {
                 </div>
                 <div>
                     <label className="text-sm font-light">Nickname</label>
-                    <input required type="text" name="phone" placeholder="+1111..."
+                    <input required type="text" name="nickname" placeholder="John"
                         className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600" />
                 </div>
                 <div className="flex items-baseline justify-between">
@@ -84,19 +84,20 @@ export default function Login({ show, setAuth }) {
     const FormSignIn = ({ setAuth }) => {
         const onSignIn = async (e) => {
             e.preventDefault();
-            let username = e.target.username;
+            let username = e.target.username.value;
 
-            if (phone === "") {
+            if (username === "") {
                 return;
             }
 
             let res = await signIn({ username });
+            console.log(res);
             if (res === null) {
                 alert("Failed to sign in");
                 return;
             }
 
-            if (!res.id) {
+            if (!res._id) {
                 alert("Username not found");
                 return;
             }
@@ -108,7 +109,7 @@ export default function Login({ show, setAuth }) {
             <form action="" className="mt-4 space-y-2" onSubmit={onSignIn}>
                 <div>
                     <label className="text-sm font-light">Phone</label>
-                    <input required type="text" name="phone" placeholder="+1111..."
+                    <input required type="text" name="username" placeholder="John Doe"
                         className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600" />
                 </div>
                 <div className="flex items-baseline justify-between">

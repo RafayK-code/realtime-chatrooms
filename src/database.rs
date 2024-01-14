@@ -3,7 +3,6 @@ use mongodb::Collection;
 use mongodb::bson::doc;
 use mongodb::options::{ClientOptions, ResolverConfig};
 use futures::TryStreamExt;
-use tokio::runtime::Runtime;
 
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -41,13 +40,11 @@ impl Database {
     /// ```
     /// let db = Database::new("MONGODB_URI");
     /// ```
-    pub fn new(key: &str) -> Self {
+    pub async fn new(key: &str) -> Self {
         dotenv().ok();
 
         let client_uri = env::var(key).expect("You must set the MONGODB_URI environment var!");
-        let options = Runtime::new().expect("Fatal error").block_on(
-            ClientOptions::parse_with_resolver_config(&client_uri, ResolverConfig::cloudflare()))
-            .unwrap();
+        let options = ClientOptions::parse_with_resolver_config(&client_uri, ResolverConfig::cloudflare()).await.unwrap();
         let client_conn = Client::with_options(options).unwrap();
         
         Database {
@@ -71,6 +68,7 @@ impl Database {
     /// }
     /// ```
     pub async fn find_user(&self, username: &str) -> Result<Option<User>, DbError> {
+        println!("{username}");
         let filter = doc! {"_id": username};
         let query = self.users.find_one(filter, None).await?;
         
