@@ -21,7 +21,7 @@ export default function Home() {
 
     const handleMessage = (msg, userId) => {
         setMessages(prev => {
-            const item = { message: msg, user_id: userId };
+            const item = { _id: 1, message: msg, user_id: userId };
             return [...prev, item];
         })
     }
@@ -99,8 +99,10 @@ export default function Home() {
     }
 
     const updateMessages = (data) => {
+        console.log("data: ", data);
         if (!data._id) return;
 
+        console.log("Wasnt null!"); 
         fetchConversations(data._id);
         setSelectedRoom(data);
     }

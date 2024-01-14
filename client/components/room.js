@@ -17,9 +17,9 @@ async function getRooms() {
 function ChatListItem({ onSelect, room, userId, index, selectedItem }) {
     const { users, created_at, last_message } = room;
     const active = index == selectedItem;
-    const date = new Date(created_at);
-    const ampm = date.getHours >= 12 ? 'PM' : 'AM';
-    const time = `${date.getHours()}:${date.getMinutes()} ${ampm}`
+    //const date = new Date(created_at);
+    //const ampm = date.getHours >= 12 ? 'PM' : 'AM';
+    //const time = `${date.getHours()}:${date.getMinutes()} ${ampm}`
     const name = users?.filter(user => user._id != userId).map(user => user.username)[0];
 
     return (
@@ -35,7 +35,7 @@ function ChatListItem({ onSelect, room, userId, index, selectedItem }) {
                     </div>
                 </div>
                 <div className='text-gray-400 min-w-[55px]'>
-                    <span className='text-xs'>{time}</span>
+                    <span className='text-xs'></span>
                 </div>
             </div>
         </div>
@@ -49,8 +49,9 @@ export default function ChatList({ onChatChange, userId }) {
 
     useEffect(() => {
         setLoading(true);
-
+        
         getRooms().then((data) => {
+            console.log(data)
             setData(data)
             setLoading(false)
         })
@@ -62,20 +63,21 @@ export default function ChatList({ onChatChange, userId }) {
         let mapUsers = new Map();
 
         item.users.forEach(el => {
+            console.log("Yuh: ", el);
             mapUsers.set(el._id, el);
         });
 
         const users = {
-            get: (id) => {
-                return mapUsers.get(id).username;
+            get: (_id) => {
+                return mapUsers.get(_id).username;
             },
 
-            get_target_user: (id) => {
-                return item.users.filter(el => el._id != id).map(el => el.username).join("");
+            get_target_user: (_id) => {
+                return item.users.filter(el => el._id != _id).map(el => el.username).join("");
             }
         }
 
-        onChatChange({ ...item.rooms, users })
+        onChatChange({ ...item.room, users })
     }
 
     return (

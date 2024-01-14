@@ -52,7 +52,6 @@ pub async fn get_user(db: web::Data<database::Database>, username: web::Path<Str
     .map_err(actix_web::error::ErrorInternalServerError)?;
 
     if let Some(user) = user {
-        println!("Hello!");
         return Ok(HttpResponse::Ok().json(user));
     }
 
@@ -88,6 +87,7 @@ pub async fn get_conversation_by_id(db: web::Data<database::Database>, room_id: 
         .to_string(),
     );
 
+    println!("fuk didnt work");
     Ok(res)
 }
 
@@ -106,7 +106,7 @@ pub async fn get_rooms(db: web::Data<database::Database>) -> Result<HttpResponse
     let res = HttpResponse::NotFound().body(
         json!({
             "error": 404,
-            "message": format!("No rooms available")
+            "message": format!("No rooms available") 
         })
         .to_string(),
     );

@@ -5,7 +5,6 @@ use actix_web::web;
 use actix_web_actors::ws;
 
 use serde::{Deserialize, Serialize};
-use actix_rt::System;
 
 use crate::{database, server, models};
 
@@ -60,7 +59,6 @@ impl Actor for WsChatSession {
         self.hb(ctx);
 
         let addr = ctx.address();
-        //let result = tokio::runtime::Runtime::new().expect("Fatal error").block_on(self.db.add_user("hello".to_string(), "world".to_string()));
 
         self.addr
             .send(server::Connect { addr: addr.recipient(), })
@@ -148,11 +146,12 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
 
                         let new_conversation = models::NewConversation {
                             user_id: input.user_id.to_string(),
-                            room_id: input.user_id.to_string(),
+                            room_id: input.room_id.to_string(),
                             message: input.value.join(""),
                         };
 
-                        let _ = System::new().block_on(self.db.add_conversation(new_conversation));
+                        //let _ = System::new().block_on(self.db.add_conversation(new_conversation));
+
                         let msg = serde_json::to_string(&chat_msg).unwrap();
 
                         self.addr.do_send(server::ClientMessage {
@@ -160,6 +159,15 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
                             msg,
                             room: self.room.clone(),
                         });
+
+                        let temp = self.db.clone();
+
+                        let future = async move {
+                            let _ = temp.add_conversation(new_conversation).await;
+                        };
+
+                        let future = actix::fut::wrap_future::<_, Self>(future);
+                        ctx.spawn(future);
                     }
 
                     _ => {}
