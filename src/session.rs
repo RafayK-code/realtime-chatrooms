@@ -137,7 +137,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
 
                     ChatType::TEXT => {
                         let chat_msg = ChatMessage {
-                            chat_type: ChatType::TYPING,
+                            chat_type: ChatType::TEXT,
                             value: input.value.to_vec(),
                             room_id: input.room_id.to_string(),
                             user_id: input.user_id.to_string(),
@@ -150,8 +150,6 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
                             message: input.value.join(""),
                         };
 
-                        //let _ = System::new().block_on(self.db.add_conversation(new_conversation));
-
                         let msg = serde_json::to_string(&chat_msg).unwrap();
 
                         self.addr.do_send(server::ClientMessage {
@@ -160,6 +158,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
                             room: self.room.clone(),
                         });
 
+                        
                         let temp = self.db.clone();
 
                         let future = async move {
@@ -168,6 +167,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
 
                         let future = actix::fut::wrap_future::<_, Self>(future);
                         ctx.spawn(future);
+                        
                     }
 
                     _ => {}

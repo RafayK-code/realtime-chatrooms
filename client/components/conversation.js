@@ -36,13 +36,10 @@ export default function Conversation({ data, auth, users }) {
         ref.current?.scrollTo(0, ref.current.scrollHeight);
     }, [data]);
 
-    console.log("YuhData: ", data);
-
     return (
         <div className='p-4 space-y-4 overflow-auto' ref={ref}>
             {
                 data.map(item => {
-                    console.log("Item: ", item);
                     return <ConversationItem
                         right={item.user_id === auth._id}
                         content={item.message}

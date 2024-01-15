@@ -53,7 +53,7 @@ pub struct ChatServer {
 impl ChatServer {
     pub fn new() -> Self {
         let mut rooms = HashMap::new();
-        rooms.insert("main".to_string(), HashSet::new());
+        rooms.insert("room1".to_string(), HashSet::new());
 
         ChatServer {
             sessions: HashMap::new(),
@@ -87,11 +87,11 @@ impl Handler<Connect> for ChatServer {
 
         self.sessions.insert(id, msg.addr);
         self.rooms
-            .entry("main".to_string())
+            .entry("room1".to_string())
             .or_insert_with(HashSet::new)
             .insert(id);
 
-        self.send_message("main", &json!({
+        self.send_message("room1", &json!({
             "value": vec![format!("{}", id)],
             "chat_type": session::ChatType::CONNECT
         }).to_string(), 0);
@@ -115,7 +115,7 @@ impl Handler<Disconnect> for ChatServer {
         }
 
         for room in rooms {
-            self.send_message("main", &json!({
+            self.send_message("room1", &json!({
                 "room": room,
                 "value": vec![format!("Someone disconnected!")],
                 "chat_type": session::ChatType::DISCONNECT

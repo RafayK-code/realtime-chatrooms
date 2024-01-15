@@ -20,7 +20,7 @@ pub async fn chat_server(req: HttpRequest, stream: web::Payload, db: web::Data<d
         session::WsChatSession {
             id: 0,
             hb: Instant::now(),
-            room: "main".to_string(),
+            room: "room1".to_string(),
             name: None,
             addr: srv.get_ref().clone(),
             db,
@@ -87,7 +87,6 @@ pub async fn get_conversation_by_id(db: web::Data<database::Database>, room_id: 
         .to_string(),
     );
 
-    println!("fuk didnt work");
     Ok(res)
 }
 

@@ -16,12 +16,18 @@ export default function Home() {
     const [isLoading, messages, setMessages, fetchConversations] = useConversations("");
 
     const handleTyping = (mode) => {
-        setIsTyping(mode === "IN")
+        if (mode === "IN") {
+            setIsTyping(true);
+        }
+
+        else {
+            setIsTyping(false);
+        }
     }
 
     const handleMessage = (msg, userId) => {
         setMessages(prev => {
-            const item = { _id: 1, message: msg, user_id: userId };
+            const item = { _id: {$oid: 0}, message: msg, user_id: userId };
             return [...prev, item];
         })
     }
@@ -99,7 +105,6 @@ export default function Home() {
     }
 
     const updateMessages = (data) => {
-        console.log("data: ", data);
         if (!data._id) return;
 
         console.log("Wasnt null!"); 
@@ -144,8 +149,8 @@ export default function Home() {
             <div className='w-full'>
               <form onSubmit={submitMessage} className='flex gap-2 items-center rounded-full border border-violet-500 bg-violet-200 p-1 m-2'>
                 <input
-                  onBlur={onFocusChange}
-                  onFocus={updateFocus}
+                  onBlur={onFocusChange.bind(this)}
+                  onFocus={updateFocus.bind(this)}
                   name="message"
                   className='p-2 placeholder-gray-600 text-sm w-full rounded-full bg-violet-200 focus:outline-none'
                   placeholder='Type your message here...' />
